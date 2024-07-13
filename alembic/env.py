@@ -6,9 +6,7 @@ import os
 from alembic import context
 
 from dotenv import load_dotenv
-from database.database import Base
-from database.models import Apps
-
+from api.database import Base
 
 load_dotenv()
 
