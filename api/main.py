@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import importlib
 import os
-from routers.MyKind import router
+from database import Base, engine
 
 app = FastAPI(
     title="cli-fastapi-json",
@@ -33,13 +33,14 @@ include_all_routers(app, 'api/routers')
 
 
 
-@app.on_event("startup")
-def on_startup():
-    # Base.metadata.create_all(bind=engine)
-    pass
+# @app.on_event("startup")
+# def on_startup():
+#     # Base.metadata.create_all(bind=engine)
+#     pass
 
 
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="localhost", port=8000)
+    Base.metadata.create_all(bind=engine)
+    uvicorn.run(app, host="localhost", port=8001)

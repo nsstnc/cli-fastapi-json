@@ -1,7 +1,7 @@
 import enum
 
 from sqlalchemy import *
-from api.database import Base
+from database import Base
 
 
 class Status(enum.Enum):
@@ -14,8 +14,8 @@ class Apps(Base):
     __tablename__ = "apps"
 
     id = Column(Integer,
-                primary_key=True,
-                index=True)
+                index=True,
+                autoincrement=True)
     UUID = Column(String,
                   primary_key=True,
                   unique=True,
