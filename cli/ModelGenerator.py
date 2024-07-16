@@ -9,19 +9,19 @@ class ModelGenerator:
 
         for name, property in self.schema.get('properties', {}).items():
             type = property.get('type')
-            constraints = []
 
             if type == 'string':
                 max_length = property.get('maxLength')
                 pattern = property.get('pattern')
-                if max_length:
-                    constraints.append(f"constr(max_length={max_length})")
-                if pattern:
-                    constraints.append(f"constr(regex=r'{pattern}')")
-                if not constraints:
+                if max_length and pattern:
+                    type = f"str = Field(max_length={max_length}, pattern=r'{pattern}')"
+                elif pattern:
+                    type = f"str = Field(pattern=r'{pattern}')"
+                elif max_length:
+                    type = f"str = Field(max_length={max_length})"
+                elif not max_length and not pattern:
                     type = 'str'
-                else:
-                    type = ' | '.join(constraints)
+
             elif type == 'integer':
                 type = 'int'
             elif type == 'number':
@@ -42,7 +42,7 @@ class ModelGenerator:
 
             fields.append(field_declaration)
 
-        model_code = (f"from pydantic import BaseModel, constr\n"
+        model_code = (f"from pydantic import BaseModel, Field\n"
                       f"from typing import *\n"
                       f"class {kind}(BaseModel):\n")
         for field in fields:
