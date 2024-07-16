@@ -1,0 +1,31 @@
+{
+  "kind": "MyModel",
+  "name": "hello-world",
+  "version": "1.0.0",
+  "description": "My application",
+  "configuration": {
+    "specification": {
+      "jvmConfig": [
+        "-Dcom.sun.a=a",
+        "-Dcom.sun.b=b",
+        "-Dcom.sun.c=c"
+      ],
+      "exposedPorts": [
+        {
+          "name": "my-port",
+          "port": 8000,
+          "protocol": "TCP"
+        }
+      ],
+      "sharedNamespace": true,
+      "log": {
+        "level": "INFO"
+      },
+      "environmentVariables": [
+        "VAR1=VALUE1"
+      ]
+    },
+    "settings": {
+    }
+  }
+}
