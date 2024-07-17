@@ -2,50 +2,68 @@ class ModelGenerator:
     def __init__(self, schema):
         self.schema = schema
 
-    def create_pydantic_model_code(self, schema):
-        kind = schema.get('properties', {}).get('kind', {}).get('default', 'DefaultModelName')
+    def create_pydantic_model_code(self, schema, model_name='root'):
+        kind = schema.get('properties', {}).get('kind', {}).get('default', model_name)
 
-        fields = []
+        nested_models = []
 
-        for name, property in self.schema.get('properties', {}).items():
-            type = property.get('type')
+        def get_field_type(property, model_name, parent_name=""):
+            property_type = property.get('type')
 
-            if type == 'string':
+            if property_type == 'string':
                 max_length = property.get('maxLength')
                 pattern = property.get('pattern')
                 if max_length and pattern:
-                    type = f"str = Field(max_length={max_length}, pattern=r'{pattern}')"
+                    return f"str = Field(max_length={max_length}, regex=r'{pattern}')"
                 elif pattern:
-                    type = f"str = Field(pattern=r'{pattern}')"
+                    return f"str = Field(regex=r'{pattern}')"
                 elif max_length:
-                    type = f"str = Field(max_length={max_length})"
-                elif not max_length and not pattern:
-                    type = 'str'
-
-            elif type == 'integer':
-                type = 'int'
-            elif type == 'number':
-                type = 'float'
-            elif type == 'boolean':
-                type = 'bool'
-            elif type == 'array':
-                type = 'list'
-            elif type == 'object':
-                type = 'dict'
+                    return f"str = Field(max_length={max_length})"
+                else:
+                    return 'str'
+            elif property_type == 'integer':
+                return 'int'
+            elif property_type == 'number':
+                return 'float'
+            elif property_type == 'boolean':
+                return 'bool'
+            elif property_type == 'array':
+                items = property.get('items', {})
+                item_type = get_field_type(items, model_name)
+                return f"List[{item_type}]"
+            elif property_type == 'object':
+                if 'properties' in property:
+                    nested_model_name = f"{model_name}_{parent_name.capitalize()}"
+                    nested_models.append((nested_model_name, property))
+                    return nested_model_name
+                else:
+                    return 'Dict[str, Any]'
             else:
-                type = 'Any'
+                return 'Any'
 
-            required = name in schema.get('required', [])
-            field_declaration = f"{name}: {type}"
-            if not required:
-                field_declaration += " = None"
+        def generate_model_code(model_name, schema):
+            fields = []
+            for name, property in schema.get('properties', {}).items():
+                field_type = get_field_type(property, model_name, name)
+                required = name in schema.get('required', [])
+                field_declaration = f"{name}: {field_type}"
+                if not required:
+                    field_declaration += " = None"
+                fields.append(field_declaration)
 
-            fields.append(field_declaration)
+            model_code = f"class {model_name}(BaseModel):\n"
+            for field in fields:
+                model_code += f"    {field}\n"
 
-        model_code = (f"from pydantic import BaseModel, Field\n"
-                      f"from typing import *\n"
-                      f"class {kind}(BaseModel):\n")
-        for field in fields:
-            model_code += f"    {field}\n"
+            return model_code
 
-        return kind, model_code
+        main_model_code = generate_model_code(kind, schema)
+
+        all_models_code = [main_model_code]
+        for nested_model_name, nested_schema in nested_models:
+            all_models_code.append(generate_model_code(nested_model_name, nested_schema))
+
+        return (kind,
+                (f"from pydantic import BaseModel, Field\n"
+                 f"from typing import *\n") +
+                "\n\n".join(all_models_code[::-1]))

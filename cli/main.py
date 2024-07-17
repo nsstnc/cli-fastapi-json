@@ -12,7 +12,7 @@ def main():
     pass
 
 @main.command()
-@click.option('--json-schema', type=click.Path(exists=True), required=True, help="Path to the JSON Schema file")
+@click.option('--json-schema', type=click.Path(exists=True), required=True, help="Маршрут до файла JSON Schema")
 def gen_models(json_schema):
     with open(json_schema, 'r') as f:
         schema = json.load(f)
