@@ -1,7 +1,7 @@
 import enum
 
 from sqlalchemy import *
-from database import Base
+from api.database import Base
 
 
 class Status(enum.Enum):

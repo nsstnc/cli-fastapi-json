@@ -4,9 +4,9 @@ from uuid import uuid4
 from sqlalchemy import insert, select, update, delete
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from models.{{ model_name }} import *
-from database import Base, engine, get_session
-from db_models import Apps, Status
+from api.models.{{ model_name }} import *
+from api.database import Base, engine, get_session
+from api.db_models import Apps, Status
 
 router = APIRouter(
     prefix="/{{ model_name }}",
