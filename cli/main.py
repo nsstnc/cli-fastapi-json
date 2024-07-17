@@ -21,7 +21,7 @@ def gen_models(json_schema):
         with open(f"api/models/{filename}.py", 'w') as file:
             file.write(model_code)
         click.echo(f"Создана модель {filename}")
-        commit_changes(f"Создана модель {filename}")
+        commit_changes(f"Created model {filename}")
     except:
         print("Не удалось сохранить файл модели")
 
@@ -49,7 +49,7 @@ def gen_rest():
             click.echo(f"Создан роутер {model_name}")
             created_routers.append(model_name)
 
-    commit_changes("Созданы REST роутеры: " + ", ".join(created_routers))
+    commit_changes("Created REST routers: " + ", ".join(created_routers))
 
 
 import subprocess
@@ -58,7 +58,7 @@ import subprocess
 def create_tag(version):
     try:
         subprocess.run(['git', 'tag', version], check=True)
-        subprocess.run(['git', 'push', 'origin', version], check=True)
+        subprocess.run(['git', 'push', 'main', version], check=True)
         click.echo(f"Создан и отправлен тег: {version}")
     except subprocess.CalledProcessError as e:
         click.echo(f"Ошибка во время создания тега: {e}")
