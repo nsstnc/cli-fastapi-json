@@ -1,8 +1,9 @@
 from ModelGenerator import ModelGenerator
 from RouterGenerator import RouterGenerator
-
+from jsonschema import Draft7Validator, exceptions
 import click
 import json
+from json import JSONDecodeError
 import os
 
 @click.group()
@@ -12,8 +13,17 @@ def main():
 @main.command()
 @click.option('--json-schema', type=click.Path(exists=True), required=True, help="Маршрут до файла JSON Schema")
 def gen_models(json_schema):
-    with open(json_schema, 'r') as f:
-        schema = json.load(f)
+
+    try:
+        with open(json_schema, 'r') as f:
+            schema = json.load(f)
+        Draft7Validator.check_schema(schema)
+    except exceptions.SchemaError as e:
+        click.echo(f"Ошибка валидации JSON Schema: {e.message}")
+        return
+    except JSONDecodeError as e:
+        click.echo(f"Ошибка открытия JSON Schema: {str(e)}")
+        return
 
     generator = ModelGenerator(schema)
     filename, model_code = generator.create_pydantic_model_code(generator.schema)
