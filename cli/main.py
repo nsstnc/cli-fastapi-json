@@ -5,6 +5,7 @@ import click
 import json
 from json import JSONDecodeError
 import os
+from create_database import *
 
 @click.group()
 def main():
@@ -82,6 +83,19 @@ def commit_changes(message):
         click.echo("Изменения отправлены в удаленный репозиторий")
     except subprocess.CalledProcessError as e:
         click.echo(f"Ошибка выполнения команд Git: {e}")
+
+
+@main.command()
+@click.option('--user', prompt='Имя пользователя', help='Имя пользователя для подключения к БД')
+@click.option('--password', prompt=True, hide_input=True, confirmation_prompt=True, help='Пароль для подключения к БД')
+@click.option('--host', prompt='Хост', default='localhost', show_default=True, help='Хост БД')
+@click.option('--port', prompt='Порт', default='5432', show_default=True, help='Порт БД')
+@click.option('--dbname', prompt='Имя базы данных', help='Имя новой базы данных')
+def create_db(user, password, host, port, dbname):
+    create_database(user, password, host, port, dbname)
+    write_to_env_file(user, password, host, port, dbname)
+
+
 
 if __name__ == '__main__':
     main()
