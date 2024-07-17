@@ -4,20 +4,20 @@ from uuid import uuid4
 from sqlalchemy import insert, select, update, delete
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from models.MyKind import *
+from models.AnotherKind import *
 from database import Base, engine, get_session
 from db_models import Apps, Status
 
 router = APIRouter(
-    prefix="/MyKind",
-    tags=["MyKind"]
+    prefix="/AnotherKind",
+    tags=["AnotherKind"]
 )
 
 @router.post("")
-def create(item: MyKind, db: Session = Depends(get_session)):
+def create(item: AnotherKind, db: Session = Depends(get_session)):
     try:
         json = item.dict()
-        if json['kind'] != "MyKind":
+        if json['kind'] != "AnotherKind":
             raise HTTPException(status_code=400, detail="Неподходящий тип документа (kind)")
         values = {
             'UUID': str(uuid4()),
@@ -41,7 +41,7 @@ def create(item: MyKind, db: Session = Depends(get_session)):
 @router.put("/{uuid}/specification")
 def update_specification(uuid: str, specification: Dict[str, Any], db: Session = Depends(get_session)):
     try:
-        obj = db.query(Apps).filter(Apps.UUID == uuid, Apps.kind == "MyKind").first()
+        obj = db.query(Apps).filter(Apps.UUID == uuid, Apps.kind == "AnotherKind").first()
         if not obj:
             raise HTTPException(status_code=404, detail="Объект не найден")
 
@@ -60,7 +60,7 @@ def update_specification(uuid: str, specification: Dict[str, Any], db: Session =
 @router.put("/{uuid}/settings")
 def update_settings(uuid: str, settings: Dict[str, Any], db: Session = Depends(get_session)):
     try:
-        obj = db.query(Apps).filter(Apps.UUID == uuid, Apps.kind == "MyKind").first()
+        obj = db.query(Apps).filter(Apps.UUID == uuid, Apps.kind == "AnotherKind").first()
         if not obj:
             raise HTTPException(status_code=404, detail="Объект не найден")
 
@@ -80,7 +80,7 @@ def update_settings(uuid: str, settings: Dict[str, Any], db: Session = Depends(g
 @router.put("/{uuid}/state")
 def update_state(uuid: str, state: Status, db: Session = Depends(get_session)):
     try:
-        obj = db.query(Apps).filter(Apps.UUID == uuid, Apps.kind == "MyKind").first()
+        obj = db.query(Apps).filter(Apps.UUID == uuid, Apps.kind == "AnotherKind").first()
         if not obj:
             raise HTTPException(status_code=404, detail="Объект не найден")
 
@@ -97,7 +97,7 @@ def update_state(uuid: str, state: Status, db: Session = Depends(get_session)):
 @router.delete("/{uuid}")
 def delete(uuid: str, db: Session = Depends(get_session)):
     try:
-        obj = db.query(Apps).filter(Apps.UUID == uuid, Apps.kind == "MyKind").first()
+        obj = db.query(Apps).filter(Apps.UUID == uuid, Apps.kind == "AnotherKind").first()
         if not obj:
             raise HTTPException(status_code=404, detail="Объект не найден")
 
@@ -111,7 +111,7 @@ def delete(uuid: str, db: Session = Depends(get_session)):
 @router.get("/{uuid}")
 def read(uuid: str, db: Session = Depends(get_session)):
     try:
-        obj = db.query(Apps).filter(Apps.UUID == uuid, Apps.kind == "MyKind").first()
+        obj = db.query(Apps).filter(Apps.UUID == uuid, Apps.kind == "AnotherKind").first()
         if not obj:
             raise HTTPException(status_code=404, detail="Объект не найден")
     except SQLAlchemyError as e:
@@ -124,7 +124,7 @@ def read(uuid: str, db: Session = Depends(get_session)):
 @router.get("/{uuid}/state")
 def read_state(uuid: str, db: Session = Depends(get_session)):
     try:
-        obj = db.query(Apps).filter(Apps.UUID == uuid, Apps.kind == "MyKind").first()
+        obj = db.query(Apps).filter(Apps.UUID == uuid, Apps.kind == "AnotherKind").first()
         if not obj:
             raise HTTPException(status_code=404, detail="Объект не найден")
     except SQLAlchemyError as e:

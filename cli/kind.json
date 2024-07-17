@@ -1,5 +1,5 @@
 {
-  "kind": "MyModel",
+  "kind": "MyKind",
   "name": "hello-world",
   "version": "1.0.0",
   "description": "My application",

@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "kind": {
+      "type": "string",
+      "maxLength": 32,
+      "default": "AnotherKind"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 128
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9]+(\\.[a-zA-Z0-9]+)*)?(\\+[a-zA-Z0-9]+(\\.[a-zA-Z0-9]+)*)?$"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 4096
+    },
+    "configuration": {
+      "type": "object",
+      "properties": {
+        "specification": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "settings": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "required": ["specification", "settings"]
+    }
+  },
+  "required": ["kind", "name", "version", "description", "configuration"]
+}
