@@ -24,5 +24,5 @@ def create_database(user, password, host, port, dbname):
 def write_to_env_file(user, password, host, port, dbname):
     connection_string = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
     with open(".env", "w") as env_file:
-        env_file.write(f"DATABASE_URL={connection_string}\n")
+        env_file.write(f"DATABASE_URL={connection_string}")
     print(f"Строка подключения записана в .env")

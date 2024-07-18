@@ -4,9 +4,13 @@ import importlib
 import os
 from api.database import Base, engine
 
+
+
+
 app = FastAPI(
     title="cli-fastapi-json",
 )
+
 
 # Настройка CORS
 app.add_middleware(
@@ -37,9 +41,9 @@ include_all_routers(app, 'api/routers')
 def on_startup():
     Base.metadata.create_all(bind=engine)
 
-if __name__ == "__main__":
-    import uvicorn
-
-
-    Base.metadata.create_all(bind=engine)
-    uvicorn.run(app, host="localhost", port=8000)
+# if __name__ == "__main__":
+#     import uvicorn
+#
+#
+#     Base.metadata.create_all(bind=engine)
+#     uvicorn.run(app, host="localhost", port=8000)

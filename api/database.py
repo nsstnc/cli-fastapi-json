@@ -15,6 +15,12 @@ Base = declarative_base()
 
 Base.metadata.create_all(bind=engine)
 
+try:
+    connection = engine.connect()
+    print("Соединение с базой данных установлено")
+    connection.close()
+except Exception as e:
+    print(f"Ошибка соединения с базой данных: {e}")
 
 def get_session():
     with session_factory() as session:

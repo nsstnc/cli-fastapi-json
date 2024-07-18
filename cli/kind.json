@@ -1,5 +1,5 @@
 {
-  "kind": "MyKind",
+  "kind": "mykind",
   "name": "hello-world",
   "version": "1.0.0",
   "description": "My application",

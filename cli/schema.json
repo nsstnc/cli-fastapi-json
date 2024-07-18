@@ -5,7 +5,7 @@
     "kind": {
       "type": "string",
       "maxLength": 32,
-      "default": "MyKind"
+      "default": "mykind"
     },
     "name": {
       "type": "string",

@@ -6,12 +6,17 @@ import json
 from json import JSONDecodeError
 import os
 from create_database import *
+import sys
+import os.path
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+
 
 @click.group()
 def main():
     pass
 
-@main.command()
+@main.command(help="Генерация моделей Pydantic из файла JSON Schema")
 @click.option('--json-schema', type=click.Path(exists=True), required=True, help="Маршрут до файла JSON Schema")
 def gen_models(json_schema):
 
@@ -38,7 +43,7 @@ def gen_models(json_schema):
         print("Не удалось сохранить файл модели")
 
 
-@main.command()
+@main.command(help="Генерация REST контроллеров для всех моделей, созданных из JSON Schema")
 def gen_rest():
     models_path = 'api/models/'
     routers_path = 'api/routers/'
@@ -65,7 +70,7 @@ def gen_rest():
 
 
 import subprocess
-@main.command()
+@main.command(help="Присваивание тега новой версии приложения")
 @click.argument('version')
 def create_tag(version):
     try:
@@ -85,7 +90,7 @@ def commit_changes(message):
         click.echo(f"Ошибка выполнения команд Git: {e}")
 
 
-@main.command()
+@main.command(help="Создание базы данных")
 @click.option('--user', prompt='Имя пользователя', help='Имя пользователя для подключения к БД')
 @click.option('--password', prompt=True, hide_input=True, confirmation_prompt=True, help='Пароль для подключения к БД')
 @click.option('--host', prompt='Хост', default='localhost', show_default=True, help='Хост БД')
@@ -94,6 +99,29 @@ def commit_changes(message):
 def create_db(user, password, host, port, dbname):
     create_database(user, password, host, port, dbname)
     write_to_env_file(user, password, host, port, dbname)
+
+    from dotenv import load_dotenv
+    load_dotenv()
+
+    from api.database import Base, engine
+    Base.metadata.create_all(bind=engine)
+
+    subprocess.run(['alembic', 'revision', f'--message="Initial migration"', '--autogenerate'], check=True)
+    click.echo("Первая миграция базы данных успешно создана")
+    subprocess.run(['alembic', 'upgrade', 'head'], check=True)
+    click.echo("Первая миграция базы данных успешно применена")
+
+
+@main.command(help="Создание новой миграции alembic")
+@click.option('--message', prompt='Описание миграции', help='Описание миграции')
+def migrate(message):
+    subprocess.run(['alembic', 'revision', f'--message={message}', '--autogenerate'], check=True)
+    click.echo("Миграция базы данных успешно создана")
+
+@main.command(help="Применение всех миграций alembic")
+def upgrade():
+    subprocess.run(['alembic', 'upgrade', 'head'], check=True)
+    click.echo("Миграция базы данных успешно применена")
 
 
 
