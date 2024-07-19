@@ -7,6 +7,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from api.models.anotherkind import *
 from api.database import Base, engine, get_session
 from api.db_models import Apps, Status
+from api.rabbitmq import *
+import json
 
 router = APIRouter(
     prefix="/anotherkind",
@@ -16,22 +18,31 @@ router = APIRouter(
 @router.post("")
 def create(item: anotherkind, db: Session = Depends(get_session)):
     try:
-        json = item.dict()
-        if json['kind'] != "anotherkind":
+        jsn = item.dict()
+        if jsn['kind'] != "anotherkind":
             raise HTTPException(status_code=400, detail="Неподходящий тип документа (kind)")
         values = {
             'UUID': str(uuid4()),
-            'kind': json['kind'],
-            'name': json['name'],
-            'version': json['version'],
-            'description': json['description'],
+            'kind': jsn['kind'],
+            'name': jsn['name'],
+            'version': jsn['version'],
+            'description': jsn['description'],
             'state': Status.new,
-            'json': json
+            'json': jsn
         }
 
         stmt = insert(Apps).values(values)
         db.execute(stmt)
         db.commit()
+
+        try:
+            values['state'] = str(values['state'])
+            send_message_rabbit(json.dumps(values))
+        except Exception as e:
+            raise HTTPException(status_code=200, detail="Не удалось отправить сообщение в брокер" + str(e))
+
+
+
     except SQLAlchemyError as e:
         db.rollback()
         raise HTTPException(status_code=500, detail="Ошибка базы данных: " + str(e))
@@ -51,6 +62,14 @@ def update_specification(uuid: str, specification: Dict[str, Any], db: Session =
         stmt = update(Apps).where(Apps.UUID == uuid).values(json=updated_json)
         db.execute(stmt)
         db.commit()
+
+
+        try:
+            send_message_rabbit(json.dumps({"message": f"{uuid} specification updated successfully"}))
+        except Exception as e:
+            raise HTTPException(status_code=200, detail="Не удалось отправить сообщение в брокер" + str(e))
+
+
     except SQLAlchemyError as e:
         db.rollback()
         raise HTTPException(status_code=500, detail="Ошибка базы данных: " + str(e))
@@ -70,6 +89,14 @@ def update_settings(uuid: str, settings: Dict[str, Any], db: Session = Depends(g
         stmt = update(Apps).where(Apps.UUID == uuid).values(json=updated_json)
         db.execute(stmt)
         db.commit()
+
+        try:
+            send_message_rabbit(json.dumps({"message": f"{uuid} settings updated successfully"}))
+        except Exception as e:
+            raise HTTPException(status_code=200, detail="Не удалось отправить сообщение в брокер" + str(e))
+
+
+
     except SQLAlchemyError as e:
         db.rollback()
         raise HTTPException(status_code=500, detail="Ошибка базы данных: " + str(e))
@@ -87,6 +114,14 @@ def update_state(uuid: str, state: Status, db: Session = Depends(get_session)):
         stmt = update(Apps).where(Apps.UUID == uuid).values(state=state)
         db.execute(stmt)
         db.commit()
+
+        try:
+            send_message_rabbit(json.dumps({"message": f"{uuid} state updated successfully"}))
+        except Exception as e:
+            raise HTTPException(status_code=200, detail="Не удалось отправить сообщение в брокер" + str(e))
+
+
+
     except SQLAlchemyError as e:
         db.rollback()
         raise HTTPException(status_code=500, detail="Ошибка базы данных: " + str(e))
@@ -103,6 +138,13 @@ def delete(uuid: str, db: Session = Depends(get_session)):
 
         db.delete(obj)
         db.commit()
+
+        try:
+            send_message_rabbit(json.dumps({"message": f"{uuid} deleted successfully"}))
+        except Exception as e:
+            raise HTTPException(status_code=200, detail="Не удалось отправить сообщение в брокер" + str(e))
+
+
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail="Ошибка базы данных")
     return {"status": "success"}

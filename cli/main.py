@@ -11,6 +11,7 @@ import os.path
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
+from api.rabbitmq import *
 
 @click.group()
 def main():
@@ -122,6 +123,23 @@ def migrate(message):
 def upgrade():
     subprocess.run(['alembic', 'upgrade', 'head'], check=True)
     click.echo("Миграция базы данных успешно применена")
+
+
+
+
+@main.command(help="Создание/обновление конфигурации RabbitMQ")
+@click.option('--username', prompt='Имя пользователя', default='guest', help='Имя пользователя для подключения к RabbitMQ')
+@click.option('--password', prompt=True, default='guest',  hide_input=True, confirmation_prompt=True, help='Пароль для подключения к RabbitMQ')
+@click.option('--host', prompt='Хост', default='localhost', show_default=True, help='Хост RabbitMQ')
+@click.option('--port', prompt='Порт', default='5672', show_default=True, help='Порт RabbitMQ')
+@click.option('--queue', prompt='Очередь', help='Очередь, куда будут отправляться сообщения')
+def set_rabbit_config(username, password, host, port, queue):
+    write_rabbit_to_env_file(host, port, username, password, queue)
+
+
+
+
+
 
 
 

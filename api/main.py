@@ -4,12 +4,12 @@ import importlib
 import os
 from api.database import Base, engine
 
-
-
-
 app = FastAPI(
     title="cli-fastapi-json",
 )
+
+
+
 
 
 # Настройка CORS
@@ -21,8 +21,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def include_all_routers(app, routers_dir):
 
+def include_all_routers(app, routers_dir):
     for filename in os.listdir(routers_dir):
         if filename.endswith('.py') and filename != '__init__.py':
             module_name = filename[:-3]
@@ -34,7 +34,6 @@ def include_all_routers(app, routers_dir):
 
 
 include_all_routers(app, 'api/routers')
-
 
 
 @app.on_event("startup")

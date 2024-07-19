@@ -5,5 +5,5 @@ call venv\Scripts\activate
 
 
 
-uvicorn api.main:app --host localhost --port 8000 --reload
+uvicorn api.main:app --host localhost --port 8001 --reload
 pause

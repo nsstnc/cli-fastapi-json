@@ -1,6 +1,8 @@
 import click
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+import dotenv
+import os
 
 def create_database(user, password, host, port, dbname):
     try:
@@ -23,6 +25,14 @@ def create_database(user, password, host, port, dbname):
 
 def write_to_env_file(user, password, host, port, dbname):
     connection_string = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
-    with open(".env", "w") as env_file:
-        env_file.write(f"DATABASE_URL={connection_string}")
+
+    dotenv_file = dotenv.find_dotenv()
+    dotenv.load_dotenv(dotenv_file)
+    os.environ["DATABASE_URL"] = connection_string
+
+    dotenv.set_key(dotenv_file, "DATABASE_URL", os.environ["DATABASE_URL"])
+
+
+    # with open(".env", "w") as env_file:
+    #     env_file.write(f"DATABASE_URL={connection_string}")
     print(f"Строка подключения записана в .env")
