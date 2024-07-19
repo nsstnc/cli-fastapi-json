@@ -28,6 +28,13 @@ def write_to_env_file(user, password, host, port, dbname):
 
     dotenv_file = dotenv.find_dotenv()
     dotenv.load_dotenv(dotenv_file)
+    if not dotenv_file:
+        with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'), "w") as env_file:
+            env_file.write("# .env file\n")
+        dotenv_file = dotenv.find_dotenv()
+        dotenv.load_dotenv(dotenv_file)
+
+
     os.environ["DATABASE_URL"] = connection_string
 
     dotenv.set_key(dotenv_file, "DATABASE_URL", os.environ["DATABASE_URL"])

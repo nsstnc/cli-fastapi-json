@@ -44,6 +44,13 @@ def write_rabbit_to_env_file(host, port, username, password, queue):
 
     dotenv_file = dotenv.find_dotenv()
     dotenv.load_dotenv(dotenv_file)
+    if not dotenv_file:
+        with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'), "w") as env_file:
+            env_file.write("# .env file\n")
+        dotenv_file = dotenv.find_dotenv()
+        dotenv.load_dotenv(dotenv_file)
+
+
 
     variables = {
         'RABBIT_HOST': host,
