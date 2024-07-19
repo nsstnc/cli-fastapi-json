@@ -38,8 +38,7 @@ def gen_models(json_schema):
         with open(f"api/models/{filename}.py", 'w') as file:
             file.write(model_code)
         click.echo(f"Создана модель {filename}")
-        # TODO включить применение изменений в репозиторий гит
-        # commit_changes(f"Created model {filename}")
+
     except:
         print("Не удалось сохранить файл модели")
 
@@ -66,8 +65,7 @@ def gen_rest():
                 f.write(code)
             click.echo(f"Создан роутер {model_name}")
             created_routers.append(model_name)
-    # TODO включить применение изменений в репозиторий гит
-    # commit_changes("Created REST routers: " + ", ".join(created_routers))
+
 
 
 import subprocess
@@ -81,6 +79,8 @@ def create_tag(version):
     except subprocess.CalledProcessError as e:
         click.echo(f"Ошибка во время создания тега: {e}")
 
+@main.command(help="Сохранение изменений в удаленный репозиторий Git")
+@click.option('message', default="")
 def commit_changes(message):
     try:
         subprocess.run(['git', 'add', '.'], check=True)
@@ -135,6 +135,7 @@ def upgrade():
 @click.option('--queue', prompt='Очередь', help='Очередь, куда будут отправляться сообщения')
 def set_rabbit_config(username, password, host, port, queue):
     write_rabbit_to_env_file(host, port, username, password, queue)
+
 
 
 
