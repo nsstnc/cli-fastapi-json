@@ -151,6 +151,8 @@ JSON схема описывает документы вида kind. Для ка
 ![Flowchart REST API](markdown-images/flowchart_rest_api.png)
 ### Диаграмма развертывания
 ![Deployment diagram](markdown-images/deployment_diagram.png)
+### Представление таблицы в Базе Данных
+![DB](markdown-images/db_schema.png)
 
 ## Файловая структура
 ```
