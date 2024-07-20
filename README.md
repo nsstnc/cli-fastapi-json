@@ -23,6 +23,7 @@ REST FastAPI приложение позволяет:
 - Изменять записи в базе данных
 - Удалять записи из базы данных
 
+
 ## Стек технологий
 
 - **Backend**: Python, FastAPI, PostgreSQL, SQLAlchemy, Alembic, Click, Pydantic, RabbitMQ
@@ -52,16 +53,104 @@ REST FastAPI приложение позволяет:
     ```
 
 ## Использование
+### JSON Schema
+Перед работой с приложением необходимо заранее подготовить JSON схемы для JSON объектов различных видов kind.
+JSON схема описывает документы вида kind. Для каждой схемы нового вида kind создается модель Pydantic с тем же названием,
+в дальнейшем на ее основе генерируются kind-контроллеры FastAPI приложения.  
+Пример JSON схемы вида "mykind":
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "kind": {
+      "type": "string",
+      "maxLength": 32,
+      "default": "mykind"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 128
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9]+(\\.[a-zA-Z0-9]+)*)?(\\+[a-zA-Z0-9]+(\\.[a-zA-Z0-9]+)*)?$"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 4096
+    },
+    "configuration": {
+      "type": "object",
+      "properties": {
+        "specification": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "settings": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "required": ["specification", "settings"]
+    }
+  },
+  "required": ["kind", "name", "version", "description", "configuration"]
+}
+```
+Генератор моделей заточен под схемы такого вида, где словари specification и settings задаются пользователем и имеют свободную структуру.
+Также в схеме обязательно должны присутствовать поля kind, name, version и description. Иначе сгенерированная модель не будет валидна к таблице в БД.  
+Пример JSON-документа, который валиден описанной выше схеме и Pydantic модели, сгенерированной на ее основе:
+```json
+{
+  "kind": "mykind",
+  "name": "hello-world",
+  "version": "1.0.0",
+  "description": "My application",
+  "configuration": {
+    "specification": {
+      "jvmConfig": [
+        "-Dcom.sun.a=a",
+        "-Dcom.sun.b=b",
+        "-Dcom.sun.c=c"
+      ],
+      "exposedPorts": [
+        {
+          "name": "my-port",
+          "port": 8000,
+          "protocol": "TCP"
+        }
+      ],
+      "sharedNamespace": true,
+      "log": {
+        "level": "INFO"
+      },
+      "environmentVariables": [
+        "VAR1=VALUE1"
+      ]
+    },
+    "settings": {
+    }
+  }
+}
+```
+Сгенерированные контроллеры FastAPI позволят работать с каждым видом kind добавленных моделей. Для каждого kind будут отдельные контроллеры GET, POST, PUT И DELETE запросов. 
 
+### CLI
 
-
+### REST API
 
 
 ## Принцип работы приложений
 
 
 ## Архитектура проекта
-
+### Flowchart диаграмма CLI-приложения
+![Flowchart ClI](/markdown-images/Flowchart CLI.png)
+### Flowchart диаграмма REST API приложения
+![Flowchart REST API](/markdown-images/Flowchart REST API.png)
+### Диаграмма развертывания
+![Deployment diagram](/markdown-images/Deployment diagram.png)
 
 ## Файловая структура
 ```
