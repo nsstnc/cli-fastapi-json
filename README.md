@@ -146,11 +146,11 @@ JSON схема описывает документы вида kind. Для ка
 
 ## Архитектура проекта
 ### Flowchart диаграмма CLI-приложения
-![Flowchart ClI](markdown-images/Flowchart CLI.png)
+![Flowchart ClI](markdown-images/flowchart_cli.png)
 ### Flowchart диаграмма REST API приложения
-![Flowchart REST API](markdown-images/Flowchart REST API.png)
+![Flowchart REST API](markdown-images/flowchart_rest_api.png)
 ### Диаграмма развертывания
-![Deployment diagram](markdown-images/Deployment diagram.png)
+![Deployment diagram](markdown-images/deployment_diagram.png)
 
 ## Файловая структура
 ```
