@@ -150,7 +150,7 @@ python cli/main.py set-rabbit-config
 ```bash
 python cli/main.py gen-models --json-schema=cli/schema.json
 ```
-Где cli/schema.json - путь к файлу JSON Schema
+Где "cli/schema.json" - путь к файлу JSON Schema
 - Генерация REST API контроллеров на основе добавленных Pydantic моделей
 ```bash
 python cli/main.py gen-rest
@@ -159,20 +159,29 @@ python cli/main.py gen-rest
 ```bash
 python cli/main.py commit-changes --message="Initial commit"
 ```
-Где message - описание коммита
+Где "Initial commit" - описание коммита
 - Присваивание тега новой версии приложения
 ```bash
 python cli/main.py create-tag v0.0.1
 ```
 - Создание миграции Alembic
 ```bash
-python cli/main.py migrate
+python cli/main.py migrate --message="added record" 
 ```
-
+- Применение всех миграций Alembic
+```bash
+python cli/main.py upgrade
+```
+- Подробную информацию обо всех командах можно посмотреть с помощью --help
+```bash
+python cli/main.py --help
+```
 ### REST API
-
-
-## Принцип работы приложений
+- Запуск сервера (После создания базы данных и добавления новых моделей/контроллеров)
+```bash
+./run_api.sh # `./run_api.bat` на Windows
+```
+Далее по адресу http://localhost:8001/docs можно использовать Swagger FastAPI, где описаны все возможные запросы к API.
 
 
 ## Архитектура проекта
