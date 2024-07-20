@@ -41,7 +41,7 @@ REST FastAPI приложение позволяет:
 2. Настроить виртуальное окружение
 
     ```bash
-    python3 -m venv venv  # `python -m venv venv` на Windows
+    python -m venv venv
     ```
    ```bash
     venv/bin/activate  # `venv/Scripts/activate` на Windows
@@ -137,6 +137,37 @@ JSON схема описывает документы вида kind. Для ка
 Сгенерированные контроллеры FastAPI позволят работать с каждым видом kind добавленных моделей. Для каждого kind будут отдельные контроллеры GET, POST, PUT И DELETE запросов. 
 
 ### CLI
+- Создание базы данных:
+```bash
+python cli/main.py create-db
+```
+Далее потребуется ввести конфигурационные данные для подключения к СУБД и создания базы данных.  
+- Запись конфигурационных данных для RabbitMQ
+```bash
+python cli/main.py set-rabbit-config
+```
+- Генерация Pydantic моделей на основе JSON schema
+```bash
+python cli/main.py gen-models --json-schema=cli/schema.json
+```
+Где cli/schema.json - путь к файлу JSON Schema
+- Генерация REST API контроллеров на основе добавленных Pydantic моделей
+```bash
+python cli/main.py gen-rest
+```
+- Сохранение и отправка изменений в удаленный репозиторий Git
+```bash
+python cli/main.py commit-changes --message="Initial commit"
+```
+Где message - описание коммита
+- Присваивание тега новой версии приложения
+```bash
+python cli/main.py create-tag v0.0.1
+```
+- Создание миграции Alembic
+```bash
+python cli/main.py migrate
+```
 
 ### REST API
 

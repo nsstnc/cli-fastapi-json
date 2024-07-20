@@ -80,7 +80,7 @@ def create_tag(version):
         click.echo(f"Ошибка во время создания тега: {e}")
 
 @main.command(help="Сохранение изменений в удаленный репозиторий Git")
-@click.option('message', default="")
+@click.option('--message', default="")
 def commit_changes(message):
     try:
         subprocess.run(['git', 'add', '.'], check=True)
